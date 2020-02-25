@@ -13,6 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class TeamActivity extends AppCompatActivity {
 
@@ -54,8 +58,8 @@ public class TeamActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-            // TODO
-
+                //TODO : appeler la tache permettant d'update l'équipe en question
+//                new UpdateTeamTask().execute(..);
             }
         });
 
