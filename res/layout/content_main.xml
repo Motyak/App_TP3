@@ -10,7 +10,7 @@
     tools:showIn="@layout/activity_main">
 
     <ListView
-        android:id="@+id/lvWines"
+        android:id="@+id/lvTeams"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

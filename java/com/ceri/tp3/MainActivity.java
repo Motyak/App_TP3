@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        registerForContextMenu(findViewById(R.id.lvWines));
+        registerForContextMenu(findViewById(R.id.lvTeams));
 
 //        WineDbHelper wineDbHelper = new WineDbHelper(this);
 //        wineDbHelper.getWritableDatabase(); //calls onCreate method
