@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-//import fr.uavignon.shuet.tp3.data.Team;
-
 public class NewTeamActivity extends AppCompatActivity {
 
     private EditText textTeam, textLeague;

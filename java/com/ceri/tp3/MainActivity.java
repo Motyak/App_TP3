@@ -3,6 +3,8 @@ package com.ceri.tp3;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,9 @@ import android.support.design.widget.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
+    static final public int ADD_TEAM_REQUEST = 1000;
+    final private SportDbHelper dbHelper = new SportDbHelper(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         registerForContextMenu(findViewById(R.id.lvTeams));
 
-        final SportDbHelper dbHelper = new SportDbHelper(this);
         dbHelper.populate();
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(
@@ -68,10 +72,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, WineActivity.class);
-//                intent.putExtra("Wine", new Wine(0, "","","","",""));
-//                intent.putExtra("Add", true);
-//                startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, NewTeamActivity.class);
+                startActivityForResult(intent, MainActivity.ADD_TEAM_REQUEST);
             }
         });
     }
@@ -112,5 +114,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == MainActivity.ADD_TEAM_REQUEST && resultCode == RESULT_OK) {
+            if(data.hasExtra(Team.TAG)) {
+                Team team = data.getParcelableExtra(Team.TAG);
+                this.dbHelper.addTeam(team);
+                recreate();
+            }
+        }
+
     }
 }
