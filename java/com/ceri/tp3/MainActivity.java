@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         registerForContextMenu(findViewById(R.id.lvTeams));
 
-        SportDbHelper dbHelper = new SportDbHelper(this);
+        final SportDbHelper dbHelper = new SportDbHelper(this);
         dbHelper.populate();
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(
@@ -40,18 +40,17 @@ public class MainActivity extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.lvTeams);
         listView.setAdapter(adapter);
 
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView parent, View view, int position, long id) {
-//                Wine wine = WineDbHelper.cursorToWine((Cursor)parent.getItemAtPosition(position));
-//
-//                System.out.println("nom:"+wine.getTitle()+" ; id:"+wine.getId());//
-//
-//                Intent intent = new Intent(MainActivity.this, WineActivity.class);
-//                intent.putExtra("Wine", wine);
-//                startActivity(intent);
-//            }
-//        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                Team team = dbHelper.cursorToTeam((Cursor) parent.getItemAtPosition(position));
+                System.out.println(team);
+
+                Intent intent = new Intent(MainActivity.this, TeamActivity.class);
+                intent.putExtra(Team.TAG, team);
+                startActivity(intent);
+            }
+        });
 //
 //        listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
 //            @Override

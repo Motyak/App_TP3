@@ -14,10 +14,6 @@ import android.widget.TextView;
 
 import java.io.File;
 
-//import fr.uavignon.shuet.tp3.data.Match;
-//import fr.uavignon.shuet.tp3.data.Team;
-//import com.example.tp3.webservice.WebServiceGet;
-
 public class TeamActivity extends AppCompatActivity {
 
     private static final String TAG = TeamActivity.class.getSimpleName();

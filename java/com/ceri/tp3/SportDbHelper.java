@@ -187,7 +187,7 @@ public class SportDbHelper extends SQLiteOpenHelper {
         addTeam(new Team("Edinburgh","Pro14"));
         addTeam(new Team("Stade Toulousain", "Top 14"));
         addTeam(new Team("Wasps","Rugby Union Premiership"));
-        addTeam(new Team("Bristol Rugby","ugby Union Premiership"));
+        addTeam(new Team("Bristol Rugby","Rugby Union Premiership"));
         addTeam(new Team("CA Brive","Pro14"));
 
         SQLiteDatabase db = this.getReadableDatabase();
