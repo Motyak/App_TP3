@@ -26,20 +26,20 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         registerForContextMenu(findViewById(R.id.lvTeams));
 
-//        WineDbHelper wineDbHelper = new WineDbHelper(this);
-//        wineDbHelper.getWritableDatabase(); //calls onCreate method
-//        if(wineDbHelper.getOnCreateCalled())
-//            wineDbHelper.populate();
-//
-//
-//        Cursor c = wineDbHelper.fetchAllWines();
-//
-//        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, c,
-//                new String[]{WineDbHelper.COLUMN_NAME,WineDbHelper.COLUMN_WINE_REGION}, new int[]{android.R.id.text1,android.R.id.text2});
-//
-//        final ListView listView = (ListView) findViewById(R.id.lvWines);
-//        listView.setAdapter(adapter);
-//
+        SportDbHelper dbHelper = new SportDbHelper(this);
+        dbHelper.populate();
+
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                this,
+                android.R.layout.simple_list_item_2,
+                dbHelper.fetchAllTeams(),
+                new String[]{SportDbHelper.COLUMN_TEAM_NAME, SportDbHelper.COLUMN_LEAGUE_NAME},
+                new int[]{android.R.id.text1, android.R.id.text2}
+                );
+
+        ListView listView = (ListView) findViewById(R.id.lvTeams);
+        listView.setAdapter(adapter);
+
 //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView parent, View view, int position, long id) {
@@ -65,16 +65,16 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 //                Intent intent = new Intent(MainActivity.this, WineActivity.class);
 //                intent.putExtra("Wine", new Wine(0, "","","","",""));
 //                intent.putExtra("Add", true);
 //                startActivity(intent);
-//            }
-//        });
+            }
+        });
     }
 
     @Override
