@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
                 Team team = dbHelper.cursorToTeam((Cursor) parent.getItemAtPosition(position));
-                System.out.println(team);
+//                System.out.println(team);
 
                 Intent intent = new Intent(MainActivity.this, TeamActivity.class);
                 intent.putExtra(Team.TAG, team);

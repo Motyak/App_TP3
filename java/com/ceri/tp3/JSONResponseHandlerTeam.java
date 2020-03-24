@@ -29,6 +29,8 @@ public class JSONResponseHandlerTeam {
         this.team = team;
     }
 
+    public Team getTeam() { return this.team; }
+
     /**
      * @param response done by the Web service
      * @return A Team with attributes filled with the collected information if response was
