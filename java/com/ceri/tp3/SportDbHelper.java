@@ -146,8 +146,6 @@ public class SportDbHelper extends SQLiteOpenHelper {
         ContentValues values = fill(team);
 
         // updating row
-//        return db.updateWithOnConflict(TABLE_NAME, values, _ID + " = ?",
-//                new String[] { String.valueOf(team.getId()) }, CONFLICT_IGNORE);
         return db.updateWithOnConflict(TABLE_NAME, values, _ID + " = ?",
                 new String[] { String.valueOf(team.getId()) }, CONFLICT_IGNORE);
     }
