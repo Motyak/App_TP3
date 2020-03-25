@@ -171,9 +171,13 @@ public class SportDbHelper extends SQLiteOpenHelper {
      * Returns a list on all the teams of the data base
      */
     public List<Team> getAllTeams() {
-	// TODO        
-
         List<Team> res = new ArrayList<>();
+        Cursor c = this.fetchAllTeams();
+        while(c.moveToNext()) {
+            res.add(this.cursorToTeam(c));
+        }
+        c.close();
+
         return res;
     }
 
@@ -229,9 +233,13 @@ public class SportDbHelper extends SQLiteOpenHelper {
     }
 
     public Team getTeam(int id) {
-        Team team;
-	// TODO
-//	return team;
-        return null; //stub
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, null,
+                _ID+"="+id, null, null, null, null, "1");
+        if (cursor != null)
+            cursor.moveToFirst();
+        else
+            return null;
+        return this.cursorToTeam(cursor);
     }
 }
