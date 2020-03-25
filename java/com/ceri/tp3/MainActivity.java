@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         registerForContextMenu(findViewById(R.id.lvTeams));
 
-        dbHelper.populate();
+        if(dbHelper.getAllTeams().isEmpty())
+            dbHelper.populate();    //seulement lorsque la table est vide
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                 this,
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, TeamActivity.class);
                 intent.putExtra(Team.TAG, team);
 //                startActivity(intent);
+                Log.d("wouloulou", "onItemClick: id = " + team.getId() + "team = " + team);//debug
                 startActivityForResult(intent, MainActivity.UPDATE_TEAM_REQUEST);
             }
         });
@@ -153,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         else if(requestCode == MainActivity.UPDATE_TEAM_REQUEST && resultCode == RESULT_OK) {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
+                Log.d("wouloulou", "onActivityResult: id = " + team.getId() + "team = " + team);//debug
                 this.dbHelper.updateTeam(team);
                 recreate();
             }
@@ -170,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
 //            pour chaque Team, on update ses valeurs
             for(Team t : teams) {
                 try {
-                    Log.d("wouloulou", "doInBackground: teamname = " + t.getName());
                     Team newTeam = ApiComBny.updateTeam(t);
                     MainActivity.this.dbHelper.updateTeam(newTeam);
                 } catch (IOException e) {
