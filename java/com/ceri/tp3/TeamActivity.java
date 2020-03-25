@@ -106,7 +106,6 @@ public class TeamActivity extends AppCompatActivity {
         @Override
         protected Object doInBackground(Object[] objects) {
             try {
-                System.out.println(this.team);
 //                requete mise a jour infos generales
                 URL searchTeamUrl = WebServiceUrl.buildSearchTeam(this.team.getName());
                 String res = HttpCon.request(HttpCon.Type.GET, searchTeamUrl.toString(), null, null);
@@ -142,10 +141,6 @@ public class TeamActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            //TODO : refraichir la vue (avec recreate() par ex..)
-            //TODO : faire en sorte que la main activity soit egalement rechargée quand on revient dessus
-            //TODO : faire en sorte que la bdd soit mise à jour lorsqu'on revient dans la MainActivity
-
 
             TeamActivity.this.setTeam(this.team);
             TeamActivity.this.updateView();

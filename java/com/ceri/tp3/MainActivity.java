@@ -2,8 +2,10 @@ package com.ceri.tp3;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -18,11 +20,21 @@ import android.support.v7.widget.Toolbar;
 
 import android.support.design.widget.FloatingActionButton;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import Mk.HttpCon;
+
 public class MainActivity extends AppCompatActivity {
 
     static final public int ADD_TEAM_REQUEST = 1000;
     static final public int UPDATE_TEAM_REQUEST = 1001;
+
     final private SportDbHelper dbHelper = new SportDbHelper(this);
+
+    private SwipeRefreshLayout refresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +88,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, NewTeamActivity.class);
                 startActivityForResult(intent, MainActivity.ADD_TEAM_REQUEST);
+            }
+        });
+
+        this.refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        this.refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new UpdateAllTeamTask().execute();
             }
         });
     }
@@ -137,5 +157,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    class UpdateAllTeamTask extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+//            TeamActivity.this.setTeam(this.team);
+//            TeamActivity.this.updateView();
+            MainActivity.this.refresh.setRefreshing(false);
+        }
     }
 }
