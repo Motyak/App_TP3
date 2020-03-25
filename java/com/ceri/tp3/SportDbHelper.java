@@ -159,9 +159,7 @@ public class SportDbHelper extends SQLiteOpenHelper {
                 null, null, null, null, COLUMN_TEAM_NAME +" ASC", null);
 
         Log.d(TAG, "call fetchAllTeams()");
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
+
         return cursor;
     }
 

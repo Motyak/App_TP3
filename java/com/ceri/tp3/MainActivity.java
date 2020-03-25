@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 //            pour chaque Team, on update ses valeurs
             for(Team t : teams) {
                 try {
+                    Log.d("wouloulou", "doInBackground: teamname = " + t.getName());
                     Team newTeam = ApiComBny.updateTeam(t);
                     MainActivity.this.dbHelper.updateTeam(newTeam);
                 } catch (IOException e) {
