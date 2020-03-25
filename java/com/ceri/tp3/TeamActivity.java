@@ -74,7 +74,11 @@ public class TeamActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //TODO : prepare result for the main activity
-        super.onBackPressed();
+//        super.onBackPressed();
+        Intent intent = new Intent();
+        intent.putExtra(Team.TAG, this.team);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void updateView() {

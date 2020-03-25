@@ -21,6 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 public class MainActivity extends AppCompatActivity {
 
     static final public int ADD_TEAM_REQUEST = 1000;
+    static final public int UPDATE_TEAM_REQUEST = 1001;
     final private SportDbHelper dbHelper = new SportDbHelper(this);
 
     @Override
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(MainActivity.this, TeamActivity.class);
                 intent.putExtra(Team.TAG, team);
-                startActivity(intent);
+//                startActivity(intent);
+                startActivityForResult(intent, MainActivity.UPDATE_TEAM_REQUEST);
             }
         });
 //
@@ -124,6 +126,13 @@ public class MainActivity extends AppCompatActivity {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 this.dbHelper.addTeam(team);
+                recreate();
+            }
+        }
+        else if(requestCode == MainActivity.UPDATE_TEAM_REQUEST && resultCode == RESULT_OK) {
+            if(data.hasExtra(Team.TAG)) {
+                Team team = data.getParcelableExtra(Team.TAG);
+                this.dbHelper.updateTeam(team);
                 recreate();
             }
         }
