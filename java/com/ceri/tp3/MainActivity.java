@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 import Mk.HttpCon;
 
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
                 Team team = dbHelper.cursorToTeam((Cursor) parent.getItemAtPosition(position));
-//                System.out.println(team);
+                Log.d("wouloulou", "id = " + team.getId());//debug
 
                 Intent intent = new Intent(MainActivity.this, TeamActivity.class);
                 intent.putExtra(Team.TAG, team);
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == MainActivity.ADD_TEAM_REQUEST && resultCode == RESULT_OK) {
+            Log.d("wouloulou", "SURPRISE M*F*ER !: ");
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 this.dbHelper.addTeam(team);
@@ -152,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
         else if(requestCode == MainActivity.UPDATE_TEAM_REQUEST && resultCode == RESULT_OK) {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
+                Log.d("wouloulou", "id = " + team.getId());//debug
                 this.dbHelper.updateTeam(team);
                 recreate();
             }
@@ -163,6 +166,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
+//            on recupere l'ensemble des teams de la BDD et on les store dans un array
+            ArrayList<Team> teams = new ArrayList<>();
+            Cursor c = MainActivity.this.dbHelper.fetchAllTeams();
+
+            try {
+                while(c.moveToNext()) {
+                    teams.add(MainActivity.this.dbHelper.cursorToTeam(c));
+                }
+            } finally {
+                c.close();
+            }
+
+//            pour chaque Team, on update ses valeurs
+            for(Team t : teams) {
+                try {
+                    Team newTeam = ApiComBny.updateTeam(t);
+                    MainActivity.this.dbHelper.updateTeam(newTeam);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             return null;
         }
 
@@ -170,9 +195,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
 
-//            TeamActivity.this.setTeam(this.team);
-//            TeamActivity.this.updateView();
             MainActivity.this.refresh.setRefreshing(false);
+            MainActivity.this.recreate();   //ca ou updateView
         }
     }
 }

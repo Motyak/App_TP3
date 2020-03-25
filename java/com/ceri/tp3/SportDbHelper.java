@@ -11,7 +11,12 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_ABORT;
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_FAIL;
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE;
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_NONE;
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_ROLLBACK;
 
 public class SportDbHelper extends SQLiteOpenHelper {
 
@@ -68,7 +73,6 @@ public class SportDbHelper extends SQLiteOpenHelper {
                 COLUMN_LAST_MATCH_SCORE_HOME + " INTEGER, " +
                 COLUMN_LAST_MATCH_SCORE_AWAY + " INTEGER, " +
                 COLUMN_LAST_UPDATE+ " TEXT, " +
-
                 // To assure the application have just one team entry per
                 // team name and league, it's created a UNIQUE
                 " UNIQUE (" + COLUMN_TEAM_NAME + ", " +
@@ -142,6 +146,8 @@ public class SportDbHelper extends SQLiteOpenHelper {
         ContentValues values = fill(team);
 
         // updating row
+//        return db.updateWithOnConflict(TABLE_NAME, values, _ID + " = ?",
+//                new String[] { String.valueOf(team.getId()) }, CONFLICT_IGNORE);
         return db.updateWithOnConflict(TABLE_NAME, values, _ID + " = ?",
                 new String[] { String.valueOf(team.getId()) }, CONFLICT_IGNORE);
     }

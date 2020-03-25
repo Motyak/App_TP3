@@ -1,26 +1,15 @@
 package com.ceri.tp3;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import Mk.HttpCon;
 
 public class TeamActivity extends AppCompatActivity {
 
@@ -106,31 +95,7 @@ public class TeamActivity extends AppCompatActivity {
         @Override
         protected Object doInBackground(Object[] objects) {
             try {
-//                requete mise a jour infos generales
-                URL searchTeamUrl = WebServiceUrl.buildSearchTeam(this.team.getName());
-                String res = HttpCon.request(HttpCon.Type.GET, searchTeamUrl.toString(), null, null);
-                InputStream is = new ByteArrayInputStream(res.getBytes("UTF-8"));
-                JSONResponseHandlerTeam jsonTeam = new JSONResponseHandlerTeam(this.team);
-                jsonTeam.readJsonStream(is);
-                this.team = jsonTeam.getTeam();
-
-//                requete mise a jour dernier match
-                URL searchLastEventsUrl = WebServiceUrl.buildSearchLastEvents(this.team.getIdTeam());
-                res = HttpCon.request(HttpCon.Type.GET, searchLastEventsUrl.toString(), null, null);
-                is = new ByteArrayInputStream(res.getBytes("UTF-8"));
-                JSONResponseHandlerLastEvents jsonLastEvents = new JSONResponseHandlerLastEvents(this.team);
-                jsonLastEvents.readJsonStream(is);
-                this.team = jsonLastEvents.getTeam();
-
-//                requete mise a jour classement
-                URL getRankingUrl = WebServiceUrl.buildGetRanking(this.team.getIdLeague());
-                res = HttpCon.request(HttpCon.Type.GET, getRankingUrl.toString(), null, null);
-                is = new ByteArrayInputStream(res.getBytes("UTF-8"));
-                JSONResponseHandlerTeamRanking jsonRanking = new JSONResponseHandlerTeamRanking(this.team);
-                jsonRanking.readJsonStream(is);
-                this.team = jsonRanking.getTeam();
-
-
+                ApiComBny.updateTeam(this.team);
             } catch (IOException e) {
                 e.printStackTrace();
             }
