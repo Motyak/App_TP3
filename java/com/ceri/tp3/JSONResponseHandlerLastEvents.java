@@ -1,6 +1,8 @@
 package com.ceri.tp3;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +32,7 @@ public class JSONResponseHandlerLastEvents {
      * @param response done by the Web service
      */
     public void readJsonStream(InputStream response) throws IOException {
+        this.match = new Match();
         JsonReader reader = new JsonReader(new InputStreamReader(response, "UTF-8"));
         try {
             readResults(reader);
@@ -43,7 +46,7 @@ public class JSONResponseHandlerLastEvents {
         reader.beginObject();
         while (reader.hasNext()) {
             String name = reader.nextName();
-            if (name.equals("teams")) {
+            if (name.equals("results")) {
                 readArrayResults(reader);
             } else {
                 reader.skipValue();
@@ -54,20 +57,14 @@ public class JSONResponseHandlerLastEvents {
 
 
     private void readArrayResults(JsonReader reader) throws IOException {
+        boolean foundEventWithNonNullScores = false;
         reader.beginArray();
-        // only consider the first event with non-null scores
-//        int firstEventId = this.getFirstEventWithNonNullScore(reader);
-        int firstEventId = 0;
-        if(firstEventId == -1) {
-            team.setLastEvent(new Match(-1, "", "", "", -1, -1));
-            return;
-        }
-        int nb = 0;
-        while (reader.hasNext()) {
+        int nb = 0; // only consider the first element of the array
+        while (reader.hasNext() ) {
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
-                if (nb == firstEventId) {
+                if (!foundEventWithNonNullScores) {
                     if (name.equals("idEvent")) {
                         match.setId(reader.nextLong());
                     } else if (name.equals("strEvent")) {
@@ -76,10 +73,11 @@ public class JSONResponseHandlerLastEvents {
                         match.setHomeTeam(reader.nextString());
                     } else if (name.equals("strAwayTeam")) {
                         match.setAwayTeam(reader.nextString());
-                    } else if (name.equals("intHomeScore")) {
+                    } else if (name.equals("intHomeScore") && reader.peek() != JsonToken.NULL) {
                         match.setHomeScore(reader.nextInt());
-                    } else if (name.equals("intAwayScore")) {
+                    } else if (name.equals("intAwayScore") && reader.peek() != JsonToken.NULL) {
                         match.setAwayScore(reader.nextInt());
+                        foundEventWithNonNullScores = true;
                     } else {
                         reader.skipValue();
                     }
@@ -91,28 +89,28 @@ public class JSONResponseHandlerLastEvents {
             nb++;
         }
         reader.endArray();
+        if(!foundEventWithNonNullScores)
+            match = new Match(-1, "", "", "", -1, -1);
     }
 
-    private int getFirstEventWithNonNullScore(JsonReader reader) throws IOException {
-        reader.beginArray();
-        // only consider the first event with non-null scores
-        int id = 0;
-        while (reader.hasNext()) {
-            reader.beginObject();
-            while (reader.hasNext()) {
-                String name = reader.nextName();
-                if (name.equals("intHomeScore")) {
-                    if (reader.nextString() != null)
-                        return id;
-                } else {
-                    reader.skipValue();
-                }
-                reader.skipValue();
-            }
-            reader.endObject();
-            id++;
-        }
-        reader.endArray();
-        return -1;  //no events found
-    }
+//    private int getFirstEventWithNonNullScore(JsonReader reader) throws IOException {
+//        reader.beginArray();
+//        int id = 0;
+//        while (reader.hasNext() ) {
+//            reader.beginObject();
+//            while (reader.hasNext()) {
+//                String name = reader.nextName();
+//                if (name.equals("intHomeScore")) {
+//                    if(reader.nextString() != null)
+//                        return id;
+//                }
+//                else
+//                    reader.skipValue();
+//            }
+//            reader.endObject();
+//            id++;
+//        }
+//        reader.endArray();
+//        return -1;  //no event found
+//    }
 }

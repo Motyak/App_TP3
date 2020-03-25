@@ -107,20 +107,19 @@ public class TeamActivity extends AppCompatActivity {
             try {
 //                requete mise a jour infos generales
                 URL searchTeamUrl = WebServiceUrl.buildSearchTeam(this.team.getName());
-                System.out.println(searchTeamUrl.toString());
                 String res = HttpCon.request(HttpCon.Type.GET, searchTeamUrl.toString(), null, null);
                 InputStream is = new ByteArrayInputStream(res.getBytes("UTF-8"));
                 JSONResponseHandlerTeam jsonTeam = new JSONResponseHandlerTeam(this.team);
                 jsonTeam.readJsonStream(is);
                 this.team = jsonTeam.getTeam();
 
-////                requete mise a jour dernier match
-//                URL searchLastEventsUrl = WebServiceUrl.buildSearchLastEvents(this.team.getIdTeam());
-//                res = HttpCon.request(HttpCon.Type.GET, searchLastEventsUrl.toString(), null, null);
-//                is = new ByteArrayInputStream(res.getBytes("UTF-8"));
-//                JSONResponseHandlerLastEvents jsonLastEvents = new JSONResponseHandlerLastEvents(this.team);
-//                jsonLastEvents.readJsonStream(is);
-//                this.team = jsonLastEvents.getTeam();
+//                requete mise a jour dernier match
+                URL searchLastEventsUrl = WebServiceUrl.buildSearchLastEvents(this.team.getIdTeam());
+                res = HttpCon.request(HttpCon.Type.GET, searchLastEventsUrl.toString(), null, null);
+                is = new ByteArrayInputStream(res.getBytes("UTF-8"));
+                JSONResponseHandlerLastEvents jsonLastEvents = new JSONResponseHandlerLastEvents(this.team);
+                jsonLastEvents.readJsonStream(is);
+                this.team = jsonLastEvents.getTeam();
 
 ////                    prend en param l'id de la ligue
 //                    URL getRankingUrl = WebServiceUrl.buildGetRanking();
