@@ -59,7 +59,6 @@ public class JSONResponseHandlerLastEvents {
     private void readArrayResults(JsonReader reader) throws IOException {
         boolean foundEventWithNonNullScores = false;
         reader.beginArray();
-        int nb = 0; // only consider the first element of the array
         while (reader.hasNext() ) {
             reader.beginObject();
             while (reader.hasNext()) {
@@ -86,31 +85,9 @@ public class JSONResponseHandlerLastEvents {
                 }
             }
             reader.endObject();
-            nb++;
         }
         reader.endArray();
         if(!foundEventWithNonNullScores)
             match = new Match(-1, "", "", "", -1, -1);
     }
-
-//    private int getFirstEventWithNonNullScore(JsonReader reader) throws IOException {
-//        reader.beginArray();
-//        int id = 0;
-//        while (reader.hasNext() ) {
-//            reader.beginObject();
-//            while (reader.hasNext()) {
-//                String name = reader.nextName();
-//                if (name.equals("intHomeScore")) {
-//                    if(reader.nextString() != null)
-//                        return id;
-//                }
-//                else
-//                    reader.skipValue();
-//            }
-//            reader.endObject();
-//            id++;
-//        }
-//        reader.endArray();
-//        return -1;  //no event found
-//    }
 }

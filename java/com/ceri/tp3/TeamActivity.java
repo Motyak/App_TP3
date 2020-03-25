@@ -65,7 +65,6 @@ public class TeamActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                //TODO : appeler la tache permettant d'update l'équipe en question
                 new UpdateTeamTask(TeamActivity.this.team).execute();
             }
         });
@@ -102,9 +101,8 @@ public class TeamActivity extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
-            //TODO : simplifier ma classe HttpCon et la réutiliser
-
             try {
+                System.out.println(this.team);
 //                requete mise a jour infos generales
                 URL searchTeamUrl = WebServiceUrl.buildSearchTeam(this.team.getName());
                 String res = HttpCon.request(HttpCon.Type.GET, searchTeamUrl.toString(), null, null);
@@ -121,10 +119,15 @@ public class TeamActivity extends AppCompatActivity {
                 jsonLastEvents.readJsonStream(is);
                 this.team = jsonLastEvents.getTeam();
 
-////                    prend en param l'id de la ligue
-//                    URL getRankingUrl = WebServiceUrl.buildGetRanking();
+//                requete mise a jour classement
+                URL getRankingUrl = WebServiceUrl.buildGetRanking(this.team.getIdLeague());
+                res = HttpCon.request(HttpCon.Type.GET, getRankingUrl.toString(), null, null);
+                is = new ByteArrayInputStream(res.getBytes("UTF-8"));
+                JSONResponseHandlerTeamRanking jsonRanking = new JSONResponseHandlerTeamRanking(this.team);
+                jsonRanking.readJsonStream(is);
+                this.team = jsonRanking.getTeam();
 
-//                    simplifier ma classe HttpCon...
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
