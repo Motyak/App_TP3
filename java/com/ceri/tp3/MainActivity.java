@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 new UpdateAllTeamTask().execute();
+                MainActivity.this.adapter.notifyItemRangeChanged(0, MainActivity.this.adapter.equipes.size());
             }
         });
 
@@ -97,11 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.adapter.equipes.remove(position);
 //                supprimer image logo equipe (si y'en a une)
                 String path = MainActivity.this.getApplicationContext().getExternalFilesDir(null).toString();
-                File file = new File(path, idBdd + ".png");
-                if(file.exists()) {
-                    if(!file.delete())
-                        Log.d("wouloulou", "suppression image raté");
-                }
+                new File(path, idBdd + ".png").delete();
+
                 MainActivity.this.adapter.notifyItemRemoved(position);
             }
         });
@@ -158,17 +157,29 @@ public class MainActivity extends AppCompatActivity {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 this.dbHelper.addTeam(team);
-                this.recreate();
-//                this.adapter.notifyDataSetChanged();
+                team = this.dbHelper.getTeam(team.getName(), team.getLeague()); //recuperer id genere par la base de donnes
+                this.adapter.equipes.add(team);
+                this.adapter.notifyItemInserted(this.adapter.equipes.size() - 1);
             }
 
         }
         else if(requestCode == MainActivity.UPDATE_TEAM_REQUEST && resultCode == RESULT_OK) {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
+                List<Team> list = this.adapter.equipes;
+
+                int position = 0;
+                for(Team t : list)
+                {
+                    if(t.getId() == team.getId())
+                        break;
+                    else
+                        position++;
+                }
+
                 this.dbHelper.updateTeam(team);
-                recreate();
-//                this.adapter.notifyDataSetChanged();
+                this.adapter.equipes.set(position, team);
+                this.adapter.notifyItemChanged(position);
             }
         }
 
@@ -185,7 +196,17 @@ public class MainActivity extends AppCompatActivity {
             for(Team t : teams) {
                 try {
                     ApiComBny.updateTeam(t);
+
+                    int position = 0;
+                    for(Team e : teams)
+                    {
+                        if(e.getId() == t.getId())
+                            break;
+                        else
+                            position++;
+                    }
                     MainActivity.this.dbHelper.updateTeam(t);
+                    MainActivity.this.adapter.equipes.set(position, t);
 
 //                    badge
                     String path = MainActivity.this.getApplicationContext().getExternalFilesDir(null).toString();
@@ -208,7 +229,6 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
             return null;
         }
 
@@ -217,8 +237,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(o);
 
             MainActivity.this.refresh.setRefreshing(false);
-            MainActivity.this.recreate();   //ca ou updateView
-//            MainActivity.this.adapter.notifyDataSetChanged();
+            MainActivity.this.adapter.notifyDataSetChanged();   //a utiliser si besoin d'update la liste depuis un autre thread.
         }
     }
 }

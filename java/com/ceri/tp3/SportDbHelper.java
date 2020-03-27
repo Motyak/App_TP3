@@ -238,4 +238,17 @@ public class SportDbHelper extends SQLiteOpenHelper {
             return null;
         return this.cursorToTeam(cursor);
     }
+
+    public Team getTeam(String name, String leagueName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, null,
+                COLUMN_TEAM_NAME+" = ? and "+COLUMN_LEAGUE_NAME+" = ?", new String[]{name, leagueName}, null, null, null, "1");
+        if (cursor != null)
+            cursor.moveToFirst();
+        else
+            return null;
+        return this.cursorToTeam(cursor);
+    }
+
+
 }
