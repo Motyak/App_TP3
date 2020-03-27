@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -115,23 +116,26 @@ public class TeamActivity extends AppCompatActivity {
         protected Object doInBackground(Object[] objects) {
             try {
 //                mise a jour infos de l'equipe dans l'activité
-                ApiComBny.updateTeam(this.team);
+                boolean exist = ApiComBny.updateTeam(this.team);
 
 //                recuperation du logo
-                String path = TeamActivity.this.getApplicationContext().getExternalFilesDir(null).toString();
-                File file = new File(path, this.team.getId() + ".png");
-                if(!file.exists())
+                if(exist)
                 {
-                    Bitmap img = ApiComBny.downloadTeamBadge(this.team.getTeamBadge());
-
-                    if(img != null && ContextCompat.checkSelfPermission(TeamActivity.this.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                    String path = TeamActivity.this.getApplicationContext().getExternalFilesDir(null).toString();
+                    File file = new File(path, this.team.getId() + ".png");
+                    if(!file.exists())
                     {
-                        OutputStream os = null;
-                        os = new FileOutputStream(file);
-                        img.compress(Bitmap.CompressFormat.PNG, 85, os);
-                        os.close();
+                        Bitmap img = ApiComBny.downloadTeamBadge(this.team.getTeamBadge());
 
-                        MediaStore.Images.Media.insertImage(getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
+                        if(img != null && ContextCompat.checkSelfPermission(TeamActivity.this.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                        {
+                            OutputStream os = null;
+                            os = new FileOutputStream(file);
+                            img.compress(Bitmap.CompressFormat.PNG, 85, os);
+                            os.close();
+
+                            MediaStore.Images.Media.insertImage(getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
+                        }
                     }
                 }
             } catch (IOException e) {

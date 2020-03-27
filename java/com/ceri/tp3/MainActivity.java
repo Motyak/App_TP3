@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     final private SportDbHelper dbHelper = new SportDbHelper(this);
 
     private SwipeRefreshLayout refresh;
-//    private SimpleCursorAdapter adapter;
+    private RecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,22 +52,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        registerForContextMenu(findViewById(R.id.lvTeams));
         registerForContextMenu(findViewById(R.id.rvTeams)); //a modifier?
 
         if(dbHelper.getAllTeams().isEmpty())
             dbHelper.populate();    //seulement lorsque la table est vide
 
-//        this.adapter = new SimpleCursorAdapter(
-//                this,
-//                android.R.layout.simple_list_item_2,
-//                dbHelper.fetchAllTeams(),
-//                new String[]{SportDbHelper.COLUMN_TEAM_NAME, SportDbHelper.COLUMN_LEAGUE_NAME},
-//                new int[]{android.R.id.text1, android.R.id.text2}
-//                );
-
         RecyclerView rvTeams = findViewById(R.id.rvTeams);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, this.dbHelper.getAllTeams());
+        this.adapter = new RecyclerViewAdapter(this, this.dbHelper.getAllTeams());
         rvTeams.setAdapter(adapter);
         rvTeams.setLayoutManager(new LinearLayoutManager(this));
         rvTeams.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -140,8 +131,7 @@ public class MainActivity extends AppCompatActivity {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 this.dbHelper.addTeam(team);
-                recreate();
-//                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
+                this.recreate();
 //                this.adapter.notifyDataSetChanged();
             }
 
@@ -149,10 +139,8 @@ public class MainActivity extends AppCompatActivity {
         else if(requestCode == MainActivity.UPDATE_TEAM_REQUEST && resultCode == RESULT_OK) {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
-                Log.d("wouloulou", "onActivityResult: id = " + team.getId() + "team = " + team);//debug
                 this.dbHelper.updateTeam(team);
                 recreate();
-//                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
 //                this.adapter.notifyDataSetChanged();
             }
         }
@@ -203,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
             MainActivity.this.refresh.setRefreshing(false);
             MainActivity.this.recreate();   //ca ou updateView
-//            MainActivity.this.adapter.changeCursor(MainActivity.this.dbHelper.fetchAllTeams());
 //            MainActivity.this.adapter.notifyDataSetChanged();
         }
     }
