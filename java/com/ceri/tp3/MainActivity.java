@@ -1,10 +1,14 @@
 package com.ceri.tp3;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     final private SportDbHelper dbHelper = new SportDbHelper(this);
 
     private SwipeRefreshLayout refresh;
-    private SimpleCursorAdapter adapter;
+//    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
         if(dbHelper.getAllTeams().isEmpty())
             dbHelper.populate();    //seulement lorsque la table est vide
 
-        this.adapter = new SimpleCursorAdapter(
-                this,
-                android.R.layout.simple_list_item_2,
-                dbHelper.fetchAllTeams(),
-                new String[]{SportDbHelper.COLUMN_TEAM_NAME, SportDbHelper.COLUMN_LEAGUE_NAME},
-                new int[]{android.R.id.text1, android.R.id.text2}
-                );
+//        this.adapter = new SimpleCursorAdapter(
+//                this,
+//                android.R.layout.simple_list_item_2,
+//                dbHelper.fetchAllTeams(),
+//                new String[]{SportDbHelper.COLUMN_TEAM_NAME, SportDbHelper.COLUMN_LEAGUE_NAME},
+//                new int[]{android.R.id.text1, android.R.id.text2}
+//                );
 
         RecyclerView rvTeams = findViewById(R.id.rvTeams);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, this.dbHelper.getAllTeams());
@@ -79,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
                 new UpdateAllTeamTask().execute();
             }
         });
+
+//        ask for writing permissions if not already granted
+        if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, TeamActivity.ASK_WRITE_PERMISSIONS_REQUEST);
     }
 
     @Override
@@ -127,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 this.dbHelper.addTeam(team);
-//                recreate();
-                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
-                this.adapter.notifyDataSetChanged();
+                recreate();
+//                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
+//                this.adapter.notifyDataSetChanged();
             }
 
         }
@@ -138,9 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 Team team = data.getParcelableExtra(Team.TAG);
                 Log.d("wouloulou", "onActivityResult: id = " + team.getId() + "team = " + team);//debug
                 this.dbHelper.updateTeam(team);
-//                recreate();
-                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
-                this.adapter.notifyDataSetChanged();
+                recreate();
+//                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
+//                this.adapter.notifyDataSetChanged();
             }
         }
 
@@ -171,9 +179,9 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(o);
 
             MainActivity.this.refresh.setRefreshing(false);
-//            MainActivity.this.recreate();   //ca ou updateView
-            MainActivity.this.adapter.changeCursor(MainActivity.this.dbHelper.fetchAllTeams());
-            MainActivity.this.adapter.notifyDataSetChanged();
+            MainActivity.this.recreate();   //ca ou updateView
+//            MainActivity.this.adapter.changeCursor(MainActivity.this.dbHelper.fetchAllTeams());
+//            MainActivity.this.adapter.notifyDataSetChanged();
         }
     }
 }

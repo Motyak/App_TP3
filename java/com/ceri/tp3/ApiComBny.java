@@ -1,8 +1,15 @@
 package com.ceri.tp3;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -21,6 +28,7 @@ public class ApiComBny {
 //        si la team est introuvable dans l'API (par rapport à son nom)
         if(team.getIdLeague() == 0)
             return false;
+
         team = jsonTeam.getTeam();
 
 
@@ -43,4 +51,24 @@ public class ApiComBny {
         return true;
     }
 
+    public static Bitmap downloadTeamBadge(String url) {
+        HttpURLConnection con = null;
+        try {
+            URL imageUrl = new URL(url);
+            con = (HttpURLConnection) imageUrl.openConnection();
+            if(con.getResponseCode() == 200) {
+                InputStream is = new BufferedInputStream(con.getInputStream());
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                Bitmap img = BitmapFactory.decodeStream(is, null, options);
+                return img;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(con != null)
+                con.disconnect();
+        }
+        return null;    //en cas d'erreur
+    }
 }
