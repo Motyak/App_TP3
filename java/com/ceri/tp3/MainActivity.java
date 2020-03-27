@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +28,10 @@ import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import Mk.HttpCon;
@@ -166,6 +171,24 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     ApiComBny.updateTeam(t);
                     MainActivity.this.dbHelper.updateTeam(t);
+
+//                    badge
+                    String path = MainActivity.this.getApplicationContext().getExternalFilesDir(null).toString();
+                    File file = new File(path, t.getId() + ".png");
+                    if(!file.exists())
+                    {
+                        Bitmap img = ApiComBny.downloadTeamBadge(t.getTeamBadge());
+
+                        if(img != null && ContextCompat.checkSelfPermission(MainActivity.this.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                        {
+                            OutputStream os = null;
+                            os = new FileOutputStream(file);
+                            img.compress(Bitmap.CompressFormat.PNG, 85, os);
+                            os.close();
+
+                            MediaStore.Images.Media.insertImage(getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

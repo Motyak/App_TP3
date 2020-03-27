@@ -95,10 +95,12 @@ public class TeamActivity extends AppCompatActivity {
 //        ajout du logo
         String dirPath = getApplicationContext().getExternalFilesDir(null).toString();
         File imageFile = new File(dirPath, this.team.getId() + ".png");
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap img = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-        imageBadge.setImageBitmap(img);
+        if(imageFile.exists()) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap img = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+            imageBadge.setImageBitmap(img);
+        }
     }
 
     class UpdateTeamTask extends AsyncTask {

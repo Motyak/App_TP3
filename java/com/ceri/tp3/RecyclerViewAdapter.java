@@ -1,8 +1,14 @@
 package com.ceri.tp3;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -42,10 +51,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final String nomEquipe = equipe.getName();
         String dernierMatch = equipe.getLastEvent().toString();
 
-//        ((ViewHolder) holder).image.setImageResource(context.getResources().getIdentifier(equipe.getTeamBadge()+"_icon","drawable",context.getPackageName()));
+//        badge
+        String dirPath = this.context.getExternalFilesDir(null).toString();
+        File imageFile = new File(dirPath, equipe.getId() + ".png");
+        if(imageFile.exists()) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap img = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+            ((ViewHolder) holder).image.setImageBitmap(img);
+        }
+
+
         ((ViewHolder) holder).nomEquipe.setText(nomEquipe);
         ((ViewHolder) holder).dernierMatch.setText(dernierMatch);
-
         ((ViewHolder) holder).parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
