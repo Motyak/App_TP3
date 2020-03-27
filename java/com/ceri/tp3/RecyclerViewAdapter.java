@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,15 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
 
     private Context context;
-    private List<Team> equipes;
+    public List<Team> equipes;
 
 
     public RecyclerViewAdapter(Context context, List<Team> equipes) {
@@ -64,14 +60,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         ((ViewHolder) holder).nomEquipe.setText(nomEquipe);
         ((ViewHolder) holder).dernierMatch.setText(dernierMatch);
+        ((ViewHolder)holder).idBdd = equipe.getId();//
         ((ViewHolder) holder).parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked on : "+nomEquipe);
-//                Toast.makeText(context, labels[position],Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(v.getContext(),TeamActivity.class);
                 intent.putExtra(Team.TAG, equipe);
+                Log.d("wouloulou", "onClick: " + equipe.getId());
                 ((Activity)v.getContext()).startActivityForResult(intent, MainActivity.UPDATE_TEAM_REQUEST);
             }
         });
@@ -87,6 +84,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView nomEquipe;
         TextView dernierMatch;
         LinearLayout parentLayout;
+        long idBdd;
 
         public ViewHolder(View itemView) {
             super(itemView);

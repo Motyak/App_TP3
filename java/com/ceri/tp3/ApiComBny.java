@@ -28,7 +28,6 @@ public class ApiComBny {
 //        si la team est introuvable dans l'API (par rapport à son nom)
         if(team.getIdLeague() == 0)
             return false;
-
         team = jsonTeam.getTeam();
 
 

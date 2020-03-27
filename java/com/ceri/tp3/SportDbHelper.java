@@ -231,7 +231,7 @@ public class SportDbHelper extends SQLiteOpenHelper {
     public Team getTeam(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, null,
-                _ID+"="+id, null, null, null, null, "1");
+                _ID+" = ?", new String[]{String.valueOf(id)}, null, null, null, "1");
         if (cursor != null)
             cursor.moveToFirst();
         else

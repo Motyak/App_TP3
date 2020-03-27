@@ -3,11 +3,11 @@ package com.ceri.tp3;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,12 +15,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SimpleCursorAdapter;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import Mk.HttpCon;
-
 public class MainActivity extends AppCompatActivity {
 
     static final public int ADD_TEAM_REQUEST = 1000;
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SwipeRefreshLayout refresh;
     private RecyclerViewAdapter adapter;
+    private RecyclerView rvTeams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +51,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        registerForContextMenu(findViewById(R.id.rvTeams)); //a modifier?
+        registerForContextMenu(findViewById(R.id.rvTeams));
 
         if(dbHelper.getAllTeams().isEmpty())
             dbHelper.populate();    //seulement lorsque la table est vide
 
-        RecyclerView rvTeams = findViewById(R.id.rvTeams);
         this.adapter = new RecyclerViewAdapter(this, this.dbHelper.getAllTeams());
+
+        this.rvTeams = findViewById(R.id.rvTeams);
         rvTeams.setAdapter(adapter);
         rvTeams.setLayoutManager(new LinearLayoutManager(this));
         rvTeams.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -79,6 +79,33 @@ public class MainActivity extends AppCompatActivity {
                 new UpdateAllTeamTask().execute();
             }
         });
+
+        ItemTouchHelper ith = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                int idBdd = (int)((RecyclerViewAdapter.ViewHolder)viewHolder).idBdd;
+                int position = viewHolder.getAdapterPosition();
+                Log.d("wouloulou", "deleting " + position + "->" + idBdd);
+//                supprimer equipe de la base de données
+                MainActivity.this.dbHelper.deleteTeam(idBdd);
+//                supprimer equipe de la liste de l'adaptateur
+                MainActivity.this.adapter.equipes.remove(position);
+//                supprimer image logo equipe (si y'en a une)
+                String path = MainActivity.this.getApplicationContext().getExternalFilesDir(null).toString();
+                File file = new File(path, idBdd + ".png");
+                if(file.exists()) {
+                    if(!file.delete())
+                        Log.d("wouloulou", "suppression image raté");
+                }
+                MainActivity.this.adapter.notifyItemRemoved(position);
+            }
+        });
+        ith.attachToRecyclerView(rvTeams);
 
 //        ask for writing permissions if not already granted
         if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
