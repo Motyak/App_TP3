@@ -8,6 +8,7 @@ import java.net.URL;
 
 import Mk.HttpCon;
 
+//classes qui contient les scénarios avec l'API
 public class ApiComBny {
 
     public static boolean updateTeam(Team team) throws IOException {

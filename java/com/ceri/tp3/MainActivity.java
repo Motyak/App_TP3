@@ -6,13 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import android.support.v7.app.AppCompatActivity;
@@ -20,11 +21,8 @@ import android.support.v7.widget.Toolbar;
 
 import android.support.design.widget.FloatingActionButton;
 
-import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import Mk.HttpCon;
@@ -45,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        registerForContextMenu(findViewById(R.id.lvTeams));
+//        registerForContextMenu(findViewById(R.id.lvTeams));
+        registerForContextMenu(findViewById(R.id.rvTeams)); //a modifier?
 
         if(dbHelper.getAllTeams().isEmpty())
             dbHelper.populate();    //seulement lorsque la table est vide
@@ -58,33 +57,11 @@ public class MainActivity extends AppCompatActivity {
                 new int[]{android.R.id.text1, android.R.id.text2}
                 );
 
-        ListView listView = (ListView) findViewById(R.id.lvTeams);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-                Team team = dbHelper.cursorToTeam((Cursor) parent.getItemAtPosition(position));
-
-                Intent intent = new Intent(MainActivity.this, TeamActivity.class);
-                intent.putExtra(Team.TAG, team);
-//                startActivity(intent);
-                Log.d("wouloulou", "onItemClick: id = " + team.getId() + "team = " + team);//debug
-                startActivityForResult(intent, MainActivity.UPDATE_TEAM_REQUEST);
-            }
-        });
-//
-//        listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-//            @Override
-//            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//                menu.add("Supprimer");
-//
-//                AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//                Wine wine = WineDbHelper.cursorToWine((Cursor)listView.getItemAtPosition(acmi.position));
-//
-//                MainActivity.this.selectedWine = wine;
-//            }
-//        });
+        RecyclerView rvTeams = findViewById(R.id.rvTeams);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, this.dbHelper.getAllTeams());
+        rvTeams.setAdapter(adapter);
+        rvTeams.setLayoutManager(new LinearLayoutManager(this));
+        rvTeams.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 //
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
