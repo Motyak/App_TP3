@@ -10,14 +10,18 @@ import Mk.HttpCon;
 
 public class ApiComBny {
 
-    public static Team updateTeam(Team team) throws IOException {
+    public static boolean updateTeam(Team team) throws IOException {
 //                requete mise a jour infos generales
         URL searchTeamUrl = WebServiceUrl.buildSearchTeam(team.getName());
         String res = HttpCon.request(HttpCon.Type.GET, searchTeamUrl.toString(), null, null);
         InputStream is = new ByteArrayInputStream(res.getBytes("UTF-8"));
         JSONResponseHandlerTeam jsonTeam = new JSONResponseHandlerTeam(team);
         jsonTeam.readJsonStream(is);
+//        si la team est introuvable dans l'API (par rapport à son nom)
+        if(team.getIdLeague() == 0)
+            return false;
         team = jsonTeam.getTeam();
+
 
 //                requete mise a jour dernier match
         URL searchLastEventsUrl = WebServiceUrl.buildSearchLastEvents(team.getIdTeam());
@@ -35,7 +39,7 @@ public class ApiComBny {
         jsonRanking.readJsonStream(is);
         team = jsonRanking.getTeam();
 
-        return team;
+        return true;
     }
 
 }

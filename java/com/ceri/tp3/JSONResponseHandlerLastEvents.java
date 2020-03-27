@@ -87,6 +87,7 @@ public class JSONResponseHandlerLastEvents {
             reader.endObject();
         }
         reader.endArray();
+//        si on trouve aucun match 'complet' (complet <=> aucune valeur null), alors on retourne un match par défaut
         if(!foundEventWithNonNullScores)
             match = new Match(-1, "", "", "", -1, -1);
     }

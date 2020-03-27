@@ -1,6 +1,7 @@
 package com.ceri.tp3;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class JSONResponseHandlerTeam {
         reader.beginObject();
         while (reader.hasNext()) {
             String name = reader.nextName();
-            if (name.equals("teams")) {
+            if (name.equals("teams") && reader.peek() != JsonToken.NULL) {
                 readArrayTeams(reader);
             } else {
                 reader.skipValue();

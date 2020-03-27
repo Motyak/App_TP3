@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     final private SportDbHelper dbHelper = new SportDbHelper(this);
 
     private SwipeRefreshLayout refresh;
+    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         if(dbHelper.getAllTeams().isEmpty())
             dbHelper.populate();    //seulement lorsque la table est vide
 
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+        this.adapter = new SimpleCursorAdapter(
                 this,
                 android.R.layout.simple_list_item_2,
                 dbHelper.fetchAllTeams(),
@@ -149,15 +150,20 @@ public class MainActivity extends AppCompatActivity {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 this.dbHelper.addTeam(team);
-                recreate();
+//                recreate();
+                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
+                this.adapter.notifyDataSetChanged();
             }
+
         }
         else if(requestCode == MainActivity.UPDATE_TEAM_REQUEST && resultCode == RESULT_OK) {
             if(data.hasExtra(Team.TAG)) {
                 Team team = data.getParcelableExtra(Team.TAG);
                 Log.d("wouloulou", "onActivityResult: id = " + team.getId() + "team = " + team);//debug
                 this.dbHelper.updateTeam(team);
-                recreate();
+//                recreate();
+                this.adapter.changeCursor(this.dbHelper.fetchAllTeams());
+                this.adapter.notifyDataSetChanged();
             }
         }
 
@@ -173,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
 //            pour chaque Team, on update ses valeurs
             for(Team t : teams) {
                 try {
-                    Team newTeam = ApiComBny.updateTeam(t);
-                    MainActivity.this.dbHelper.updateTeam(newTeam);
+                    ApiComBny.updateTeam(t);
+                    MainActivity.this.dbHelper.updateTeam(t);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -188,7 +194,9 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(o);
 
             MainActivity.this.refresh.setRefreshing(false);
-            MainActivity.this.recreate();   //ca ou updateView
+//            MainActivity.this.recreate();   //ca ou updateView
+            MainActivity.this.adapter.changeCursor(MainActivity.this.dbHelper.fetchAllTeams());
+            MainActivity.this.adapter.notifyDataSetChanged();
         }
     }
 }
